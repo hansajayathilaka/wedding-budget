@@ -107,6 +107,43 @@ Google sign-in is blocked on domains Firebase doesn't know about.
 host from step 3 (e.g. `wedding-budget--wedding-55c03.us-central1.hosted.app`) and any custom
 domain you attach later. `localhost` and `wedding-55c03.firebaseapp.com` are there by default.
 
+## Hosting configuration reference
+
+The app runs on **Firebase App Hosting** (decision D3 in the plan), which is Firebase's hosting for
+Next.js: server rendering on Cloud Run, a CDN in front, and builds from GitHub. Classic Firebase
+Hosting (the `hosting` block in `firebase.json`) is deliberately not used: it has no first-class
+Next.js server runtime, and its `headers`/`rewrites` don't apply to App Hosting.
+
+| What | Where | Notes |
+| --- | --- | --- |
+| Backend id, root dir | `firebase.json` → `apphosting` | `backendId` must match the backend you create in step 3. |
+| Scaling and runtime | `apphosting.yaml` → `runConfig` | 1 vCPU, 512 MiB, scale to zero (`minInstances: 0`), at most 2 instances. |
+| Environment | `apphosting.yaml` → `env` | `NEXT_PUBLIC_*` values are inlined at build time. `NEXT_PUBLIC_USE_EMULATORS` is `'0'`, so production never talks to emulators or shows the dev sign-in form. |
+| Response headers | `next.config.mjs` → `headers()` | HSTS, `nosniff`, frame denial, referrer and permissions policies, and `Cross-Origin-Opener-Policy: same-origin-allow-popups`, which the Google sign-in popup needs. |
+
+Tuning:
+
+- **Cold starts vs cost:** `minInstances: 0` costs nothing while idle but the first request after a
+  quiet period is slower. Set `minInstances: 1` in `apphosting.yaml` to keep one instance warm
+  (a small monthly cost).
+- **Traffic spikes:** raise `maxInstances`. The cap is also your cost ceiling.
+- **No Content-Security-Policy yet:** the Firebase SDK and Next.js inline scripts make a strict CSP
+  fragile. Add one later, with the Google sign-in domains allowed, and test sign-in afterwards.
+- **Secrets:** nothing secret is needed today (the web config is public). If you add some, use
+  Cloud Secret Manager: `firebase apphosting:secrets:set NAME` and reference it with `secret:` in
+  `apphosting.yaml`.
+
+### Custom domain
+
+**Console:** _App Hosting → wedding-budget → Settings → Domains → Add custom domain_. Enter the
+domain, then add the DNS records it shows (an `A`/`AAAA` or `CNAME`, plus a `TXT` record for
+ownership) at your DNS provider. The CDN issues the TLS certificate automatically, which can take up
+to an hour or so after DNS propagates.
+
+Then add the same domain under _Authentication → Settings → Authorized domains_ (step 4). The
+`authDomain` in `apphosting.yaml` stays `wedding-55c03.firebaseapp.com`: that is where the Google
+sign-in popup runs, and it works from any authorized domain.
+
 ## 5. Check it end to end
 
 1. Open the backend URL: you should see the sign-in screen (no emulator email form in
