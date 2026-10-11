@@ -7,8 +7,10 @@ export const CURRENCIES = ['LKR', 'USD', 'EUR', 'GBP', 'INR', 'AUD', 'CAD', 'AED
 /** Number of minor-unit digits for a currency (2 for LKR/USD, 0 for JPY...). */
 export function minorDigits(currency: string): number {
   try {
-    return new Intl.NumberFormat('en', { style: 'currency', currency }).resolvedOptions()
-      .maximumFractionDigits;
+    return (
+      new Intl.NumberFormat('en', { style: 'currency', currency }).resolvedOptions()
+        .maximumFractionDigits ?? 2
+    );
   } catch {
     return 2;
   }

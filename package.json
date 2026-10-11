@@ -11,10 +11,12 @@
     "format": "prettier --write .",
     "test": "vitest run tests/unit",
     "test:coverage": "vitest run tests/unit --coverage",
-    "test:rules": "vitest run --config vitest.rules.config.ts",
     "test:e2e": "playwright test",
     "emulators": "firebase emulators:start --only auth,firestore",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "test:e2e:emulated": "firebase emulators:exec --only auth,firestore --project demo-wedding-budget \"playwright test\"",
+    "test:rules:emulated": "firebase emulators:exec --only firestore --project demo-wedding-budget \"vitest run --config vitest.rules.config.ts\"",
+    "test:all": "npm run lint && npm run typecheck && npm test && firebase emulators:exec --only auth,firestore --project demo-wedding-budget \"vitest run --config vitest.rules.config.ts && playwright test\""
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
@@ -50,6 +52,7 @@
     "autoprefixer": "^10.6.1",
     "eslint": "^9.39.5",
     "eslint-config-next": "^15.5.27",
+    "firebase-admin": "^14.5.0",
     "firebase-tools": "^15.33.0",
     "postcss": "^8.5.29",
     "prettier": "^3.9.10",
