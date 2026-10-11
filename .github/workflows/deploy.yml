@@ -1,0 +1,67 @@
+name: Deploy
+
+# Production pipeline: every push to master runs the full CI, then deploys
+#   1. Firestore rules + indexes   (so new code never meets old rules/missing indexes)
+#   2. the Next.js app to Firebase App Hosting (a rollout of this exact commit)
+#
+# One-time setup is in docs/DEPLOYMENT.md (section 6). It needs:
+#   secret   FIREBASE_SERVICE_ACCOUNT  JSON key of the deploy service account
+#   variable FIREBASE_PROJECT_ID       wedding-55c03
+# Optional: variable APPHOSTING_BACKEND_ID (defaults to wedding-budget).
+# Until the variable exists the deploy job is skipped, and the checks still run.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Never run two production deploys at once, and never cancel one halfway through.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy to Firebase
+    needs: ci
+    runs-on: ubuntu-latest
+    # Add required reviewers to the "production" environment in GitHub to gate deploys.
+    environment: production
+    if: ${{ vars.FIREBASE_PROJECT_ID != '' }}
+    env:
+      PROJECT: ${{ vars.FIREBASE_PROJECT_ID }}
+      BACKEND: ${{ vars.APPHOSTING_BACKEND_ID || 'wedding-budget' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Deploy Firestore rules and indexes
+        run: npx firebase deploy --only firestore:rules,firestore:indexes --project "$PROJECT" --non-interactive
+
+      - name: Roll out the app to App Hosting
+        run: >
+          npx firebase apphosting:rollouts:create "$BACKEND"
+          --git-commit "$GITHUB_SHA" --force --project "$PROJECT" --non-interactive
+
+      - name: Summary
+        run: |
+          {
+            echo "### Deployed \`${GITHUB_SHA::7}\` to \`$PROJECT\`"
+            echo "- Firestore rules and indexes: deployed"
+            echo "- App Hosting rollout started for backend \`$BACKEND\` (build and release continue in the Firebase console)"
+          } >> "$GITHUB_STEP_SUMMARY"
