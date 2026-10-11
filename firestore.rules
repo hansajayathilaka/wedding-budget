@@ -1,0 +1,133 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+    function wedding(w) {
+      return get(/databases/$(db)/documents/weddings/$(w)).data;
+    }
+    function isMember(w) {
+      return signedIn() && request.auth.uid in wedding(w).memberIds;
+    }
+    function isOwner(w) {
+      return signedIn() && wedding(w).ownerId == request.auth.uid;
+    }
+    function isInt(v, lo, hi) {
+      return v is int && v >= lo && v <= hi;
+    }
+    function isStr(v, lo, hi) {
+      return v is string && v.size() >= lo && v.size() <= hi;
+    }
+    function isStrOrNull(v, hi) {
+      return v == null || (v is string && v.size() <= hi);
+    }
+
+    function validWedding(d) {
+      return d.keys().hasOnly([
+          'name', 'groomName', 'brideName', 'weddingDate', 'currency',
+          'defaultGroomShareBp', 'targetBudgetMinor', 'ownerId', 'memberIds',
+          'memberProfiles', 'createdAt', 'updatedAt'
+        ])
+        && d.keys().hasAll([
+          'name', 'groomName', 'brideName', 'weddingDate', 'currency',
+          'defaultGroomShareBp', 'ownerId', 'memberIds', 'createdAt', 'updatedAt'
+        ])
+        && isStr(d.name, 1, 100)
+        && isStr(d.groomName, 1, 60)
+        && isStr(d.brideName, 1, 60)
+        && d.weddingDate is timestamp
+        && d.currency is string && d.currency.matches('^[A-Z]{3}$')
+        && isInt(d.defaultGroomShareBp, 0, 10000)
+        && (!('targetBudgetMinor' in d) || d.targetBudgetMinor == null
+            || isInt(d.targetBudgetMinor, 0, 9007199254740991))
+        && d.ownerId is string
+        && d.memberIds is list
+        && (!('memberProfiles' in d) || d.memberProfiles is map)
+        && d.createdAt is timestamp
+        && d.updatedAt == request.time;
+    }
+
+    function validItem(d) {
+      return d.keys().hasOnly([
+          'name', 'category', 'owner', 'groomShareBp', 'costMinor',
+          'groomPortionMinor', 'bridePortionMinor', 'isPaid', 'isEnabled',
+          'notes', 'sortOrder', 'createdAt', 'updatedAt'
+        ])
+        && d.keys().hasAll([
+          'name', 'owner', 'groomShareBp', 'costMinor', 'groomPortionMinor',
+          'bridePortionMinor', 'isPaid', 'isEnabled', 'sortOrder', 'createdAt', 'updatedAt'
+        ])
+        && isStr(d.name, 1, 120)
+        && (!('category' in d) || isStrOrNull(d.category, 60))
+        && d.owner in ['GROOM', 'BRIDE', 'SHARED']
+        && isInt(d.groomShareBp, 0, 10000)
+        && isInt(d.costMinor, 0, 9007199254740991)
+        && isInt(d.groomPortionMinor, 0, 9007199254740991)
+        && isInt(d.bridePortionMinor, 0, 9007199254740991)
+        && d.groomPortionMinor + d.bridePortionMinor == d.costMinor
+        && (d.owner != 'GROOM' || d.groomPortionMinor == d.costMinor)
+        && (d.owner != 'BRIDE' || d.bridePortionMinor == d.costMinor)
+        && d.isPaid is bool
+        && d.isEnabled is bool
+        && (!('notes' in d) || isStrOrNull(d.notes, 2000))
+        && d.sortOrder is int
+        && d.createdAt is timestamp
+        && d.updatedAt == request.time;
+    }
+
+    function validRequest(d, uid) {
+      return d.keys().hasOnly(['uid', 'displayName', 'email', 'photoURL', 'createdAt'])
+        && d.keys().hasAll(['uid', 'createdAt'])
+        && d.uid == uid
+        && isStrOrNull(d.get('displayName', null), 200)
+        && isStrOrNull(d.get('email', null), 320)
+        && isStrOrNull(d.get('photoURL', null), 2048)
+        && d.createdAt == request.time;
+    }
+
+    match /weddings/{w} {
+      allow get, list: if signedIn() && request.auth.uid in resource.data.memberIds;
+
+      allow create: if signedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.memberIds == [request.auth.uid]
+        && request.resource.data.createdAt == request.time
+        && validWedding(request.resource.data);
+
+      allow update: if signedIn()
+        && request.auth.uid in resource.data.memberIds
+        && validWedding(request.resource.data)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.createdAt == resource.data.createdAt
+        // memberIds / memberProfiles are owner-only, and the owner can never leave
+        && ((request.resource.data.memberIds == resource.data.memberIds
+             && request.resource.data.get('memberProfiles', null)
+                == resource.data.get('memberProfiles', null))
+            || (resource.data.ownerId == request.auth.uid
+                && request.auth.uid in request.resource.data.memberIds));
+
+      allow delete: if signedIn() && resource.data.ownerId == request.auth.uid;
+
+      match /items/{i} {
+        allow read: if isMember(w);
+        allow create: if isMember(w)
+          && request.resource.data.createdAt == request.time
+          && validItem(request.resource.data);
+        allow update: if isMember(w)
+          && validItem(request.resource.data)
+          && request.resource.data.createdAt == resource.data.createdAt;
+        allow delete: if isMember(w);
+      }
+
+      match /requests/{uid} {
+        allow create: if signedIn()
+          && uid == request.auth.uid
+          && exists(/databases/$(db)/documents/weddings/$(w))
+          && validRequest(request.resource.data, uid);
+        allow read, delete: if isOwner(w) || (signedIn() && uid == request.auth.uid);
+      }
+    }
+  }
+}
