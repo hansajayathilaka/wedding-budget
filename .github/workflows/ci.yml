@@ -1,13 +1,15 @@
 name: CI
 
+# Runs on pull requests, and is reused by deploy.yml (workflow_call) so that master is only
+# deployed after the exact same checks pass. It deliberately has no `push` trigger: the push to
+# master is handled by deploy.yml, which calls this workflow first.
 on:
-  push:
-    branches: [main, master]
   pull_request:
+  workflow_call:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   checks:

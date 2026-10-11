@@ -1,5 +1,6 @@
 import { expect, type Browser, type Page } from '@playwright/test';
 import { formatMoney } from '../../src/lib/money';
+import { DEMO_EMAIL, DEMO_PASSWORD } from '../../scripts/seed-data';
 
 export const money = (minor: number) => formatMoney(minor, 'LKR');
 
@@ -7,12 +8,41 @@ export function uniqueEmail(tag = 'user') {
   return `${tag}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
 }
 
-/** Signs in through the emulator-only email form shown on the sign-in screen. */
+export const TEST_PASSWORD = 'Password-1234';
+
+/** The seeded demo user has its own password (see scripts/seed-data.ts). */
+export const passwordFor = (email: string) =>
+  email === DEMO_EMAIL ? DEMO_PASSWORD : TEST_PASSWORD;
+
+/**
+ * Gets into the app through the real email/password form. Fresh emails go through "Create
+ * account"; if the account already exists (re-sign-in, seeded user) it falls back to "Sign in".
+ */
 export async function signIn(page: Page, email: string, path = '/') {
   await page.goto(path);
-  await page.getByLabel('Emulator email').fill(email);
-  await page.getByRole('button', { name: 'Sign in with email' }).click();
-  await expect(page.getByTestId('dev-sign-in')).toBeHidden();
+  const form = page.getByTestId('password-auth');
+  const password = passwordFor(email);
+
+  await form.getByRole('tab', { name: 'Create account' }).click();
+  await form.getByLabel('Email').fill(email);
+  await form.getByLabel('Password', { exact: true }).fill(password);
+  await form.getByRole('button', { name: 'Create account' }).click();
+
+  const exists = form.getByRole('alert').filter({ hasText: 'already exists' });
+  // wait until we're either in the app or told the account exists
+  await expect(async () => {
+    const gone = (await form.count()) === 0;
+    const taken = await exists.isVisible();
+    expect(gone || taken).toBe(true);
+  }).toPass();
+
+  if ((await form.count()) > 0) {
+    await form.getByRole('tab', { name: 'Sign in' }).click();
+    await form.getByLabel('Email').fill(email);
+    await form.getByLabel('Password', { exact: true }).fill(password);
+    await form.getByRole('button', { name: 'Sign in' }).click();
+  }
+  await expect(page.getByTestId('password-auth')).toBeHidden();
 }
 
 export async function newUserPage(browser: Browser, tag: string, path = '/') {

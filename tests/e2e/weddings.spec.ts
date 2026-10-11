@@ -1,13 +1,23 @@
 import { expect, test } from '@playwright/test';
-import { createWeddingViaUi, newUserPage, signIn, uniqueEmail, goTab } from './helpers';
+import {
+  createWeddingViaUi,
+  goTab,
+  newUserPage,
+  signIn,
+  TEST_PASSWORD,
+  uniqueEmail,
+} from './helpers';
 
 test('signed-out visitors see the sign-in screen in place, then stay on the same URL', async ({
   page,
 }) => {
   await page.goto('/w/aaaaaaaaaa/items');
   await expect(page.getByRole('heading', { name: 'Wedding Budget' })).toBeVisible();
-  await page.getByLabel('Emulator email').fill(uniqueEmail('inplace'));
-  await page.getByRole('button', { name: 'Sign in with email' }).click();
+  const form = page.getByTestId('password-auth');
+  await form.getByRole('tab', { name: 'Create account' }).click();
+  await form.getByLabel('Email').fill(uniqueEmail('inplace'));
+  await form.getByLabel('Password', { exact: true }).fill(TEST_PASSWORD);
+  await form.getByRole('button', { name: 'Create account' }).click();
   await expect(page.getByRole('heading', { name: 'Wedding not found' })).toBeVisible();
   expect(new URL(page.url()).pathname).toBe('/w/aaaaaaaaaa/items');
 });

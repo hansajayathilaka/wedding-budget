@@ -9,6 +9,10 @@ runConfig:
   concurrency: 80
 
 env:
+  # Production talks to the real Firebase project, never the emulators.
+  - variable: NEXT_PUBLIC_USE_EMULATORS
+    value: '0'
+    availability: [BUILD, RUNTIME]
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
     value: AIzaSyBiNTthvdwVOOloc5dVl7ci7kdY0JnueiQ
     availability: [BUILD, RUNTIME]

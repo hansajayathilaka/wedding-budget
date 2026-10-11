@@ -4,6 +4,9 @@ const PORT = 3100;
 
 export default defineConfig({
   testDir: './tests/e2e',
+  // The dev server compiles each route on first visit, so multi-user flows can be slow on a cold
+  // start. 60s keeps real hangs failing while not flaking on compilation.
+  timeout: 60_000,
   globalSetup: './tests/e2e/global-setup.ts',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,

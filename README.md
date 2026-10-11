@@ -19,8 +19,10 @@ npm run seed                    # terminal 2: demo user + demo wedding (demo@exa
 npm run dev                     # terminal 2: http://localhost:3000
 ```
 
-With emulators on, the sign-in screen shows an extra email form (dev only) next to the Google
-button, so you don't need a Google account locally. Open `/w/demo234567` after seeding.
+The sign-in screen offers Google and email + password (sign in, create account, forgot
+password). Against the emulators you can simply create an account with any email, so no Google
+account is needed locally. The seeded demo user is `demo@example.com` / `emulator-password`.
+Open `/w/demo234567` after seeding.
 
 ## Scripts
 
@@ -54,7 +56,9 @@ total including "paid"; the wedding workspace has no link back to `/` and openin
 ## Deploying (M7)
 
 The step-by-step commands (rules and indexes, Blaze and budget alert, App Hosting backend,
-authorized domains, CI deploys, rollback) are in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+authorized domains, the deploy pipeline, rollback) are in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+Pushes to `master` deploy automatically through `.github/workflows/deploy.yml` (CI → rules and
+indexes → App Hosting rollout) once the one-time setup in section 6 is done.
 The Firebase project is `wedding-55c03`; its web config is already in `apphosting.yaml`. For
 local dev against the real project instead of the emulators, put the same values in `.env.local`
 with `NEXT_PUBLIC_USE_EMULATORS=0`.

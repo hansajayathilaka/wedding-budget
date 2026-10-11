@@ -8,7 +8,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/lib/**/*.ts'],
-      exclude: ['src/lib/owner-styles.ts', 'src/lib/types.ts', 'src/lib/utils.ts', 'src/lib/notify.ts'],
+      exclude: [
+        'src/lib/owner-styles.ts',
+        'src/lib/types.ts',
+        'src/lib/utils.ts',
+        'src/lib/notify.ts',
+      ],
       thresholds: { lines: 95, functions: 95, statements: 95, branches: 90 },
     },
   },
