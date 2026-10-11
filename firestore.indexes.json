@@ -1,0 +1,21 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "weddings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "memberIds", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "weddingDate", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "items",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isEnabled", "order": "ASCENDING" },
+        { "fieldPath": "isPaid", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

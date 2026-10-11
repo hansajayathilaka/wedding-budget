@@ -1,0 +1,32 @@
+name: Deploy Firestore rules
+
+# Needs two repository settings:
+#   secret   FIREBASE_SERVICE_ACCOUNT  JSON key of a service account with "Firebase Rules Admin"
+#                                      and "Cloud Datastore Index Admin"
+#   variable FIREBASE_PROJECT_ID       the production Firebase project id
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - firestore.rules
+      - firestore.indexes.json
+      - firebase.json
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ vars.FIREBASE_PROJECT_ID != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Write credentials
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "$RUNNER_TEMP/sa.json"
+      - run: npx firebase deploy --only firestore:rules,firestore:indexes --project "$PROJECT"
+        env:
+          PROJECT: ${{ vars.FIREBASE_PROJECT_ID }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json

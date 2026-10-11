@@ -1,0 +1,29 @@
+# Firebase App Hosting runtime config. NEXT_PUBLIC_* values are inlined at build time, so they
+# are available at BUILD. These are the public web app config values (not secrets); access is
+# enforced by Firestore security rules, not by hiding the key.
+runConfig:
+  cpu: 1
+  memoryMiB: 512
+  minInstances: 0
+  maxInstances: 2
+  concurrency: 80
+
+env:
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyBiNTthvdwVOOloc5dVl7ci7kdY0JnueiQ
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: wedding-55c03.firebaseapp.com
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: wedding-55c03
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: wedding-55c03.firebasestorage.app
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: 94368256698
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: 1:94368256698:web:e714168ff65cec232e6883
+    availability: [BUILD, RUNTIME]
