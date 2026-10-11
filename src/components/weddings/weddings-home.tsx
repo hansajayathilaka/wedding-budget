@@ -40,7 +40,7 @@ export function WeddingsHome() {
         </div>
       ) : weddings.length === 0 ? (
         <div className="mx-auto mt-16 max-w-sm space-y-4 text-center">
-          <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-rose-50 text-rose-600 dark:bg-rose-950">
+          <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-bride-soft text-bride">
             <Heart className="size-7" aria-hidden />
           </div>
           <h2 className="text-lg font-semibold">No weddings yet</h2>

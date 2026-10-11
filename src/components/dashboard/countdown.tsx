@@ -33,7 +33,7 @@ export function Countdown({ date }: { date: Date }) {
   return (
     <section
       aria-label="Countdown to the wedding"
-      className="rounded-2xl bg-gradient-to-br from-rose-500 via-fuchsia-500 to-violet-600 p-5 text-white sm:p-7"
+      className="rounded-2xl bg-gradient-to-br from-hero-from to-hero-to p-5 text-white sm:p-7"
     >
       <p className="text-sm opacity-90">{format(date, 'EEEE, d MMMM yyyy · p')}</p>
       <div className="mt-3 min-h-[4.5rem]" data-testid="countdown" aria-live="off">

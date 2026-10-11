@@ -1,40 +1,35 @@
 import type { Config } from 'tailwindcss';
 
+/** `hsl(var(--x) / <alpha>)` so opacity modifiers like `bg-primary/90` work. */
+const token = (name: string) => `hsl(var(--${name}) / <alpha-value>)`;
+
 const config: Config = {
   darkMode: 'media',
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+        border: token('border'),
+        input: token('input'),
+        ring: token('ring'),
+        background: token('background'),
+        foreground: token('foreground'),
+        primary: { DEFAULT: token('primary'), foreground: token('primary-foreground') },
+        secondary: { DEFAULT: token('secondary'), foreground: token('secondary-foreground') },
+        destructive: { DEFAULT: token('destructive'), foreground: token('destructive-foreground') },
+        muted: { DEFAULT: token('muted'), foreground: token('muted-foreground') },
+        accent: { DEFAULT: token('accent'), foreground: token('accent-foreground') },
+        card: { DEFAULT: token('card'), foreground: token('card-foreground') },
+        // Semantic palette: solid fill / soft tint (badges, backgrounds) / ink (readable text).
+        groom: { DEFAULT: token('groom'), soft: token('groom-soft'), ink: token('groom-ink') },
+        bride: { DEFAULT: token('bride'), soft: token('bride-soft'), ink: token('bride-ink') },
+        shared: { DEFAULT: token('shared'), soft: token('shared-soft'), ink: token('shared-ink') },
+        success: {
+          DEFAULT: token('success'),
+          soft: token('success-soft'),
+          ink: token('success-ink'),
         },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
+        hero: { from: token('hero-from'), to: token('hero-to') },
       },
       borderRadius: {
         lg: 'var(--radius)',

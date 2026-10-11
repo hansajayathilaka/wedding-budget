@@ -138,11 +138,11 @@ export function ItemsView() {
             {totals.counts.enabled} item{totals.counts.enabled === 1 ? '' : 's'} counted
             {totals.counts.disabled > 0 && ` · ${totals.counts.disabled} disabled`}
           </span>
-          <span className="flex gap-4 tabular-nums">
+          <span className="flex flex-wrap gap-x-4 gap-y-0.5 tabular-nums">
             <span>
               Total <strong data-testid="footer-total">{money(totals.total)}</strong>
             </span>
-            <span className="text-emerald-600 dark:text-emerald-400">
+            <span className="text-success-ink">
               Paid <strong data-testid="footer-paid">{money(totals.paid)}</strong>
             </span>
             <span>

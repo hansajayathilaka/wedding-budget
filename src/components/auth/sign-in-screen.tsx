@@ -34,7 +34,7 @@ export function SignInScreen() {
   return (
     <main className="flex min-h-dvh items-center justify-center p-6">
       <div className="w-full max-w-sm space-y-6 text-center">
-        <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-rose-50 text-rose-600 dark:bg-rose-950">
+        <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-bride-soft text-bride">
           <Heart className="size-7" aria-hidden />
         </div>
         <div className="space-y-1">

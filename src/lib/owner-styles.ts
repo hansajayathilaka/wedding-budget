@@ -11,31 +11,31 @@ export interface OwnerStyle {
   selected: string;
 }
 
-/** Single source of truth for owner colors (groom = sky, bride = rose, shared = violet). */
+/** Single source of truth for owner colors (tokens defined in globals.css). */
 export const ownerStyles: Record<Owner, OwnerStyle> = {
   GROOM: {
     label: 'Groom',
-    border: 'border-l-sky-600',
-    badge: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300',
-    bar: 'bg-sky-600',
-    text: 'text-sky-600 dark:text-sky-400',
-    selected: 'bg-sky-600 text-white',
+    border: 'border-l-groom',
+    badge: 'bg-groom-soft text-groom-ink',
+    bar: 'bg-groom',
+    text: 'text-groom-ink',
+    selected: 'bg-groom text-white',
   },
   BRIDE: {
     label: 'Bride',
-    border: 'border-l-rose-600',
-    badge: 'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
-    bar: 'bg-rose-600',
-    text: 'text-rose-600 dark:text-rose-400',
-    selected: 'bg-rose-600 text-white',
+    border: 'border-l-bride',
+    badge: 'bg-bride-soft text-bride-ink',
+    bar: 'bg-bride',
+    text: 'text-bride-ink',
+    selected: 'bg-bride text-white',
   },
   SHARED: {
     label: 'Shared',
-    border: 'border-l-violet-600',
-    badge: 'bg-violet-50 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
-    bar: 'bg-violet-600',
-    text: 'text-violet-600 dark:text-violet-400',
-    selected: 'bg-violet-600 text-white',
+    border: 'border-l-shared',
+    badge: 'bg-shared-soft text-shared-ink',
+    bar: 'bg-shared',
+    text: 'text-shared-ink',
+    selected: 'bg-shared text-white',
   },
 };
 

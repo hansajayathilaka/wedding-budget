@@ -34,7 +34,7 @@ export function ShareRatioInput({
         aria-label="Groom share"
       />
       <div className="flex items-end gap-3">
-        <label className="flex-1 space-y-1 text-xs text-sky-700 dark:text-sky-300">
+        <label className="flex-1 space-y-1 text-xs text-groom-ink">
           <span className="block truncate">{groomName} %</span>
           <Input
             id={`${idPrefix}-groom`}
@@ -50,7 +50,7 @@ export function ShareRatioInput({
         <span className="pb-2 text-lg text-muted-foreground" aria-hidden>
           :
         </span>
-        <label className="flex-1 space-y-1 text-xs text-rose-700 dark:text-rose-300">
+        <label className="flex-1 space-y-1 text-xs text-bride-ink">
           <span className="block truncate">{brideName} %</span>
           <Input
             id={`${idPrefix}-bride`}

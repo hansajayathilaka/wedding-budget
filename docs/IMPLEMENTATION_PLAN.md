@@ -243,13 +243,19 @@ the enforcement. A `FirebaseProvider` and an `AuthGate` wrap the app.
 
 ## 7. UI / UX Spec
 
-### Color system (Tailwind tokens, light & dark)
+### Color system (CSS variable tokens in `globals.css`, light & dark)
 
-| Owner | Accent | Usage |
-|-------|--------|-------|
-| Groom | `sky-600` / bg `sky-50` | 4px left border on the row, badge, chart segment |
-| Bride | `rose-600` / bg `rose-50` | same |
-| Shared | `violet-600` / bg `violet-50` | same, plus a 2-tone split bar showing the ratio |
+The app uses a custom palette: warm ivory background, plum primary, and one color per role.
+Each role has a solid, a soft (tint) and an ink (readable text) token, and all of them are
+redefined for dark mode.
+
+| Role | Color | Usage |
+|------|-------|-------|
+| Groom | `groom` (deep ocean blue) | 4px left border on the row, badge, chart segment |
+| Bride | `bride` (rose) | same |
+| Shared | `shared` (antique gold) | same, plus a 2-tone split bar showing the ratio |
+| Paid | `success` (sage green) | check, "Paid" pill, progress bars |
+| Primary | `primary` (plum) / `hero-from`→`hero-to` | buttons, countdown hero |
 
 | State | Treatment |
 |-------|-----------|

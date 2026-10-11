@@ -33,11 +33,11 @@ export function CategoryBreakdown({
                 </div>
                 <div className="relative h-2 overflow-hidden rounded-full bg-muted">
                   <div
-                    className="absolute inset-y-0 left-0 rounded-full bg-violet-300 dark:bg-violet-900"
+                    className="absolute inset-y-0 left-0 rounded-full bg-primary/25"
                     style={{ width: `${(row.total / max) * 100}%` }}
                   />
                   <div
-                    className="absolute inset-y-0 left-0 rounded-full bg-emerald-500"
+                    className="absolute inset-y-0 left-0 rounded-full bg-success"
                     style={{ width: `${(row.paid / max) * 100}%` }}
                   />
                 </div>

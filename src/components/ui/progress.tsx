@@ -23,7 +23,7 @@ export function Progress({
       className={cn('h-2 w-full overflow-hidden rounded-full bg-muted', className)}
     >
       <div
-        className={cn('h-full rounded-full bg-emerald-500 transition-all', barClassName)}
+        className={cn('h-full rounded-full bg-success transition-all', barClassName)}
         style={{ width: `${pct}%` }}
       />
     </div>

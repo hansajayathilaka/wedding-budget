@@ -42,7 +42,7 @@ export function Dashboard() {
         <StatCard
           title="Paid"
           value={money(summary.paid)}
-          className="text-emerald-600 dark:text-emerald-400"
+          className="text-success-ink"
           testId="stat-paid"
         />
         <StatCard title="Remaining" value={money(summary.remaining)} testId="stat-remaining" />
