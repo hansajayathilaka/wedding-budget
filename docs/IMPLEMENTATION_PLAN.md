@@ -41,7 +41,7 @@ totals, what's paid, what's left and a countdown to the wedding date.
 | Concern | Choice | Why |
 |---------|--------|-----|
 | Frontend | **Next.js 15 (App Router) + TypeScript** | Routing, layouts, React. |
-| Auth | **Firebase Authentication** (Google sign-in, email link optional) | Needed to list "my weddings" and to secure data. See §5. |
+| Auth | **Firebase Authentication** (Google sign-in) | Needed to list "my weddings" and to secure data. See §5. |
 | Database | **Cloud Firestore** | Real-time listeners, offline cache, security rules, `sum()`/`count()` aggregations. |
 | Data access | **Firebase JS SDK (modular)**, client-side | Reads and writes go straight to Firestore and are checked by rules. No API layer needed. |
 | Server logic | None in MVP. **Cloud Functions** are optional, only for phase 2 (invites, emails). | Keeps the MVP on minimal infrastructure. |
@@ -53,8 +53,8 @@ totals, what's paid, what's left and a countdown to the wedding date.
 | IDs | **nanoid** (10 chars, custom alphabet) | Wedding document ID = URL segment. |
 | Tests | **Vitest**, **@firebase/rules-unit-testing**, **Playwright**, all run against the **Firebase Emulator Suite** | |
 
-> Alternative hosting: Vercel (frontend) with Firebase (Auth + Firestore). It works the same
-> way. App Hosting is the default here so everything lives in one Firebase project.
+> Hosting is Firebase App Hosting on the Blaze plan (D3), so everything lives in one
+> Firebase project.
 
 ---
 
@@ -161,7 +161,7 @@ item is outside the plan entirely. The UI shows a hint for this.
 Firestore rules can't tell "lists all weddings" apart from "knows this wedding's link" well
 enough to keep the `/` list private without sign-in. So **Firebase Auth is in the MVP**.
 
-- **Sign-in:** Google, with optional email link sign-in. The flow is:
+- **Sign-in:** Google only (D2). The flow is:
   1. A signed-out user opening any route sees a sign-in screen in place. There's no redirect
      to `/`.
   2. After signing in they stay on the same URL.
@@ -456,13 +456,15 @@ Each milestone ends with a mergeable PR and green CI.
 
 ---
 
-## 12. Open Questions (defaults chosen; change if needed)
+## 12. Decisions
 
-1. **Browser Back from a wedding**: default is `router.replace`, so Back does *not* return to
-   the list. The alternative is to only hide in-app links and let browser Back work as usual.
-2. **Sign-in providers**: default is Google only. Email link and Apple can be added later.
-3. **Hosting**: default is Firebase App Hosting, which needs the Blaze plan. Vercel with
-   Firebase is the alternative if you want to stay on the free Spark plan.
-4. **Currency**: default `LKR`, can be changed per wedding.
-5. **Disabled + paid**: default is that a disabled item is excluded from "paid" too (§4).
-6. **Categories**: free text with suggestions (default), or a fixed, managed list per wedding.
+These were open questions in earlier drafts and are now settled for the MVP.
+
+| # | Topic | Decision | Rejected alternative |
+|---|-------|----------|----------------------|
+| D1 | Browser Back from a wedding | Opening a wedding uses `router.replace`, so Back does **not** return to the list. `/` is reached only by typing it (§6). | Hide in-app links only and let browser Back work as usual. |
+| D2 | Sign-in providers | **Google only** in the MVP (§5). | Email link and Apple. These can be added later without data changes. |
+| D3 | Hosting | **Firebase App Hosting** on the **Blaze plan**, with a budget alert set in M7. | Vercel frontend with Firebase on the free Spark plan. |
+| D4 | Currency | **`LKR`** by default, changeable per wedding. All items in a wedding share its currency. | Per-item currency with FX (backlog). |
+| D5 | Disabled + paid | A disabled item is excluded from **every** total, including "paid" (§4). | Keep paid amounts of disabled items in the "paid" figure. |
+| D6 | Categories | **Free text with suggestions** (combobox seeded with common categories plus ones already used in the wedding). | A fixed, managed category list per wedding. |
