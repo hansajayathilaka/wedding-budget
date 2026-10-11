@@ -55,10 +55,12 @@ total including "paid"; the wedding workspace has no link back to `/` and openin
 
 These steps need access to your Firebase / GitHub accounts, so they are manual:
 
-1. Create the Firebase project(s) and set `.firebaserc`. Enable **Authentication → Google** and
+1. The Firebase project is `wedding-55c03` (set in `.firebaserc`). Enable **Authentication → Google** and
    create a **Firestore** database.
 2. Upgrade to the **Blaze** plan (needed for App Hosting) and set a **budget alert**.
-3. Fill in the web app config in `apphosting.yaml` (or store the values as secrets).
+3. The web app config for project `wedding-55c03` is already in `apphosting.yaml`. For local
+   dev against the real project instead of emulators, put the same values in `.env.local` with
+   `NEXT_PUBLIC_USE_EMULATORS=0`.
 4. Create an **App Hosting** backend (`firebase apphosting:backends:create`) connected to this
    GitHub repo and set `main`/`master` as the live branch.
 5. Add the production domain to **Authentication → Settings → Authorized domains**.
