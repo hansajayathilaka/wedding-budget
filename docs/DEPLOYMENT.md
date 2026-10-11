@@ -23,6 +23,12 @@ Already done in the console: Authentication → **Google** provider enabled, **F
 created. Check them under _Build → Authentication → Sign-in method_ and _Build → Firestore
 Database_ if the deploy below fails.
 
+**Also enable email and password sign-in:** _Build → Authentication → Sign-in method → Add new
+provider → **Email/Password**_ → enable (leave "Email link" off). Without it, "Create account" and
+"Sign in" on the login screen fail with "Email and password sign-in is not enabled for this app yet."
+Password reset emails use the default Firebase template. Customize it, and the sender name, under
+_Authentication → Templates_.
+
 ## 1. Deploy Firestore rules and indexes
 
 Until this is done the app cannot read or write anything, and the `/` list fails without its
@@ -146,12 +152,13 @@ sign-in popup runs, and it works from any authorized domain.
 
 ## 5. Check it end to end
 
-1. Open the backend URL: you should see the sign-in screen (no emulator email form in
-   production).
-2. Sign in with Google. You land on the empty "My weddings" list.
+1. Open the backend URL: you should see the sign-in screen with Google and the email +
+   password form.
+2. Sign in with Google, or use _Create account_ with an email and a password of at least 8
+   characters. You land on the empty "My weddings" list.
 3. Create a wedding. You should land on `/w/<10 chars>` with no link back to the list.
 4. Add an item, tick it as paid, reload. The change should stick.
-5. Open the same URL in a private window with another Google account. It should show
+5. Open the same URL in a private window with another account (Google or email + password). It should show
    "Wedding not found" with a **Request access** button. Approve it from _Settings_ in the first window.
 
 If sign-in shows `auth/unauthorized-domain`, step 4 is missing the host. If the list never loads or

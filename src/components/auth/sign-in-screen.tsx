@@ -1,16 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-} from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { Heart } from 'lucide-react';
-import { getFirebase, USE_EMULATORS } from '@/firebase/client';
+import { getFirebase } from '@/firebase/client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { PasswordForm } from './password-form';
 
 export function SignInScreen() {
   const [error, setError] = useState<string | null>(null);
@@ -51,48 +46,13 @@ export function SignInScreen() {
             {error}
           </p>
         )}
-        {USE_EMULATORS && <EmulatorSignIn />}
+        <div className="flex items-center gap-3 text-xs text-muted-foreground" aria-hidden>
+          <span className="h-px flex-1 bg-border" />
+          or
+          <span className="h-px flex-1 bg-border" />
+        </div>
+        <PasswordForm />
       </div>
     </main>
-  );
-}
-
-/** Email/password sign-in against the Auth emulator only (local dev and e2e tests). */
-function EmulatorSignIn() {
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState<string | null>(null);
-
-  async function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    const { auth } = getFirebase();
-    const password = 'emulator-password';
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch {
-      try {
-        await createUserWithEmailAndPassword(auth, email, password);
-      } catch (err) {
-        setError((err as Error).message);
-      }
-    }
-  }
-
-  return (
-    <form onSubmit={submit} className="space-y-2 border-t pt-4 text-left" data-testid="dev-sign-in">
-      <p className="text-xs font-medium text-muted-foreground">Emulator sign-in (dev only)</p>
-      <Input
-        type="email"
-        required
-        placeholder="you@example.com"
-        aria-label="Emulator email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <Button type="submit" variant="outline" className="w-full">
-        Sign in with email
-      </Button>
-      {error && <p className="text-xs text-destructive">{error}</p>}
-    </form>
   );
 }

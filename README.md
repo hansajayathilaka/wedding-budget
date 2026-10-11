@@ -19,8 +19,10 @@ npm run seed                    # terminal 2: demo user + demo wedding (demo@exa
 npm run dev                     # terminal 2: http://localhost:3000
 ```
 
-With emulators on, the sign-in screen shows an extra email form (dev only) next to the Google
-button, so you don't need a Google account locally. Open `/w/demo234567` after seeding.
+The sign-in screen offers Google and email + password (sign in, create account, forgot
+password). Against the emulators you can simply create an account with any email, so no Google
+account is needed locally. The seeded demo user is `demo@example.com` / `emulator-password`.
+Open `/w/demo234567` after seeding.
 
 ## Scripts
 
