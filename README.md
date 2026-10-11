@@ -53,17 +53,8 @@ total including "paid"; the wedding workspace has no link back to `/` and openin
 
 ## Deploying (M7)
 
-These steps need access to your Firebase / GitHub accounts, so they are manual:
-
-1. The Firebase project is `wedding-55c03` (set in `.firebaserc`). Enable **Authentication → Google** and
-   create a **Firestore** database.
-2. Upgrade to the **Blaze** plan (needed for App Hosting) and set a **budget alert**.
-3. The web app config for project `wedding-55c03` is already in `apphosting.yaml`. For local
-   dev against the real project instead of emulators, put the same values in `.env.local` with
-   `NEXT_PUBLIC_USE_EMULATORS=0`.
-4. Create an **App Hosting** backend (`firebase apphosting:backends:create`) connected to this
-   GitHub repo and set `main`/`master` as the live branch.
-5. Add the production domain to **Authentication → Settings → Authorized domains**.
-6. For rules/indexes from CI, add the `FIREBASE_SERVICE_ACCOUNT` secret and the
-   `FIREBASE_PROJECT_ID` variable (see `.github/workflows/deploy-rules.yml`), or run
-   `firebase deploy --only firestore:rules,firestore:indexes` by hand.
+The step-by-step commands (rules and indexes, Blaze and budget alert, App Hosting backend,
+authorized domains, CI deploys, rollback) are in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+The Firebase project is `wedding-55c03`; its web config is already in `apphosting.yaml`. For
+local dev against the real project instead of the emulators, put the same values in `.env.local`
+with `NEXT_PUBLIC_USE_EMULATORS=0`.
